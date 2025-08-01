@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Use Firebase CDN for compatibility with script tags -->
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+    <script src="js/scripts.js"></script>
+
+    <div class="container flex-row">
+        <div class="left-panel">
+            <h1>Register New User</h1>
+            <form id="registrationForm">
+                <label for="id"><b>ID:</b></label>
+                <input type="text" id="id" name="id" required placeholder="Enter ID">
+                <label for="name"><b>Name:</b></label>
+                <input type="text" id="name" name="name" required placeholder="Enter name">
+                <label for="age"><b>Age:</b></label>
+                <input type="number" id="age" name="age" required placeholder="Enter age">
+                <label for="email"><b>Email:</b></label>
+                <input type="email" id="email" name="email" required placeholder="Enter email address">
+                <button type="submit">Register</button>
+            </form>
+        </div>
+        <div class="right-panel">
+            <h2>User Log</h2>
+            <div class="log-controls">
+                <div class="log-actions">
+                <input type="date" id="logDate" value="" />
+                <button id="exportCsvBtn" type="button">
+                    <svg viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 0 1 1 1v8.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4A1 1 0 1 1 6.293 9.293L8.5 11.586V3a1 1 0 0 1 1-1zm-7 13a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1z"/></svg>
+                    Export to CSV
+                </button>
+                    <button id="assignBtn" type="button">
+                        <svg viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Assign
+                    </button>
+                    <button id="sendMailBtn" type="button">
+                        <svg viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M2.94 6.94a1.5 1.5 0 0 1 2.12 0L10 11.88l4.94-4.94a1.5 1.5 0 1 1 2.12 2.12l-6 6a1.5 1.5 0 0 1-2.12 0l-6-6a1.5 1.5 0 0 1 0-2.12z"/></svg>
+                        Send Mail
+                    </button>
+                    <button id="quizBtn" type="button" class="quiz-btn">
+                        <svg viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 12H9v-2h2v2zm0-4H9V6h2v4z"/></svg>
+                        Quiz
+                    </button>
+                </div>
+                <div class="time-range-group">
+                    <label for="fromTime">From:</label>
+                    <input type="time" id="fromTime" />
+                    <label for="toTime">To:</label>
+                    <input type="time" id="toTime" />
+                    <label for="courseInput">Course:</label>
+                    <input type="text" id="courseInput" placeholder="Enter course name" />
+                </div>
+            </div>
+            <div id="userLog"></div>
+        </div>
+    </div>
+    <!-- Send Mail Modal -->
+    <div id="sendMailModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" id="closeSendMailModal">&times;</span>
+            <h3>Send Mail</h3>
+            <form id="sendMailForm">
+                <label for="mailFromDate">From Date:</label>
+                <input type="date" id="mailFromDate" name="mailFromDate" required>
+                <label for="mailToDate">To Date:</label>
+                <input type="date" id="mailToDate" name="mailToDate" required>
+                <label for="mailCourse">Course Name:</label>
+                <input type="text" id="mailCourse" name="mailCourse" placeholder="Enter course name" required>
+                <div class="modal-actions">
+                    <button type="submit" id="sendMailSubmit">Send</button>
+                    <button type="button" id="cancelSendMail">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Export to CSV Modal -->
+    <div id="exportCsvModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width: 340px;">
+            <span class="close" id="closeExportCsvModal">&times;</span>
+            <h3>Export to CSV</h3>
+            <div id="csvOptionButtons">
+                <button id="logsListOption" type="button" style="width:100%;margin-bottom:10px;">Logs List</button>
+                <button id="nsarListOption" type="button" style="width:100%;">NSAR List</button>
+            </div>
+            <form id="nsarFields" style="display:none; flex-direction:column; gap:8px; margin-top:10px;">
+                <input type="date" id="nsarFromDate" placeholder="From Date" required>
+                <input type="date" id="nsarToDate" placeholder="To Date" required>
+                <input type="text" id="nsarCourse" placeholder="Course" required>
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button id="downloadNsarBtn" type="submit">Download NSAR</button>
+                    <button id="cancelNsarBtn" type="button">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Your custom JavaScript -->
+</body>
+
+</html>
